@@ -1,6 +1,16 @@
 from dealz_api.util import *
-from dealz_api.Deals import Deal
+from dealz_api.fresh_deal import FreshDeal
+import datetime
+import dateparser
 import re
+
+def get_creation_date(soup):
+    creation_date_string = soup.find(lambda tag: tag.name == 'time').find('span', class_='hide--fromW3').text
+    return parse_mydealz_time_string(creation_date_string)
+
+
+def get_deal_description(soup):
+    pass
 
 class MydealzApi:
     def __init__(self):
@@ -34,14 +44,13 @@ class MydealzApi:
             group = ''
             title = tag.find('a', class_='thread-link').getText(strip=True)
             username = tag.find('span', class_='thread-username').getText(strip=True)
-            time_last_comment_string = parse_mydealz_time_string(tag.find(text=re.compile('.*vor [0-9]+.*')))
             deal_text = tag.find('div', class_='cept-description-container').getText(strip=True)
             number_of_comments = int(tag.find('a', class_='cept-comment-link').getText(strip=True))
-            # creation_date = get_creation_date_from_url(href, self._request_header);
+            # deal_soup = get_soup(href, self._request_header)
+            # creation_date = get_creation_date(deal_soup)
             creation_date = 0
-            fresh_deal = Deal.Deal(thread_id, href, price, degrees, creation_date, group, title, username,
-                            time_last_comment_string, deal_text, number_of_comments)
-            print(fresh_deal)
+            fresh_deal = FreshDeal(thread_id, href, price, degrees, creation_date, group, title, username,
+                                              deal_text, number_of_comments)
             fresh_deals.append(fresh_deal)
         return fresh_deals
 

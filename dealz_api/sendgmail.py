@@ -1,6 +1,4 @@
 import smtplib
-from email import encoders
-from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
 def send_gmail(recipient_email_adress, email_text, subject):
