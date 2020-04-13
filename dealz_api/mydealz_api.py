@@ -29,8 +29,9 @@ class MydealzApi:
 
             price_tag = tag.find('span', class_='thread-price')
             if price_tag is not None:
-                price = re.compile('[0-9]+,*[0-9]*').search(price_tag.getText(strip=True)).group()
-                price = float(price.replace('.', '').replace(',', '.'))
+                price = re.compile('[0-9]+,*[0-9]*').search(price_tag.getText(strip=True))
+                if price is not None:
+                    price = float(price.group().replace('.', '').replace(',', '.'))
             else:
                 price = None
 

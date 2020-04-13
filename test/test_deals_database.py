@@ -1,8 +1,8 @@
-from application.deals_database import DealsDatabase
 import jsonpickle
 import unittest
 from test.debuggable_test_case import DebuggableTestCase
 from dealz_api.deal import Deal
+from dealz_api.deals_database import DealsDatabase
 
 class TestDealsDatabase(DebuggableTestCase):
     def setUp(self):
