@@ -1,15 +1,22 @@
 import json
 
+import datetime
 from dealz_api.sendgmail import send_gmail
-from dealz_api.action_info import ActionInfo
+from dealz_api.action import Action
+from dealz_api.deal import Deal
 
 
-def create_email_text(action_info: ActionInfo):
+def create_email_text(action: Action, deal: Deal):
     email_text = ''
-    for keyword_trigger in action_info.keyword_triggers:
-        email_text += 'Keyword trigger for {}:\r\n {}.\r\n  URL: {}\r\n\r\n'.format(str(keyword_trigger[0]),
-                                                                                    keyword_trigger[1].title,
-                                                                                    keyword_trigger[1].href)
+    for keyword_trigger in action.keyword_triggers:
+        email_text += f'Keyword trigger for {str(keyword_trigger[-1])}:\r\n {deal.title}\r\n  URL: {deal.href}\r\n\r\n'
+
+    if action.hotness_triggered:
+        email_text += f'Hotness triggered:\r\n' \
+                      f' {deal.title}\r\n' \
+                      f' URL: {deal.href}\r\n' \
+                      f' #comments: {deal.number_of_comments}\r\n' \
+                      f' #age: {(datetime.datetime.now() - deal.creation_date).total_seconds() / 60.0} minutes\r\n\r\n'
     return email_text
 
 
@@ -23,9 +30,9 @@ class ActionExecutor:
             self.password_ = config['password']
             self.smtp_address_ = config['smtp_address']
 
-    def __call__(self, action_info: ActionInfo):
-        if action_info.keyword_triggers:
-            email_text = create_email_text(action_info)
+    def __call__(self, action: Action, deal: Deal):
+        if action.keyword_triggers or action.hotness_triggered:
+            email_text = create_email_text(action, deal)
             send_gmail(self.recipient_email_address_, email_text, self.subject_, self.sender_email_address_,
                        self.password_,
                        self.smtp_address_)

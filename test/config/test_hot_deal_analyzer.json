@@ -1,0 +1,5 @@
+{
+  "ageToExclude_minutes": 15,
+  "ageToCheck_minutes": 10,
+  "numberOfCommentsThreshold": 15
+}

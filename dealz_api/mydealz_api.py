@@ -63,9 +63,9 @@ class MydealzApi:
             title = tag.find('a', class_='thread-link').getText(strip=True)
             username = tag.find('span', class_='thread-username').getText(strip=True)
             number_of_comments = int(tag.find('a', class_='cept-comment-link').getText(strip=True))
-            deal_soup = get_soup(href, self._request_header)
 
             if detailed_info:
+                deal_soup = get_soup(href, self._request_header)
                 deal_text = deal_soup.find('div', class_='userHtml').getText(strip=True)
                 creation_date = get_creation_date(deal_soup)
             else:

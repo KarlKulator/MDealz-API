@@ -1,14 +1,14 @@
 import unittest
 from copy import deepcopy
-from mock import MagicMock, Mock, call
+from mock import Mock, call
 import jsonpickle
 
-from dealz_api.action_info import ActionInfo
-from test.debuggable_test_case import DebuggableTestCase
+from dealz_api.action import Action
 from dealz_api.fresh_deals_processor import FreshDealsProcessor
 from dealz_api.deals_database import DealsDatabase
 from dealz_api.fresh_deal import FreshDeal
 from dealz_api.deal import Deal
+from test.debuggable_test_case import DebuggableTestCase
 
 
 class TestFreshDealsProcessor(DebuggableTestCase):
@@ -28,9 +28,9 @@ class TestFreshDealsProcessor(DebuggableTestCase):
         self.database_mock.has_deal.assert_has_calls(
             [call(fresh_deal.thread_id) for fresh_deal in self.fresh_deals_test])
         self.database_mock.update_deal.assert_has_calls(
-            [call(Deal(fresh_deal).set_is_fresh(False)) for fresh_deal in self.fresh_deals_test])
+            [call(Deal(fresh_deal)) for fresh_deal in self.fresh_deals_test])
         self.deal_analyzer_mock.assert_has_calls(
-            [call(Deal(fresh_deal), fresh_deal, ActionInfo()) for fresh_deal in
+            [call(Deal(fresh_deal), fresh_deal, Action()) for fresh_deal in
              self.fresh_deals_test])
 
     def test_process_fresh_deals_twice(self):
@@ -52,8 +52,8 @@ class TestFreshDealsProcessor(DebuggableTestCase):
         self.processor.process_fresh_deals(new_fresh_deals)
 
         self.database_mock.has_deal.assert_has_calls([call(new_deal.thread_id) for new_deal in new_deals])
-        self.database_mock.update_deal.assert_has_calls([call(Deal(new_deal).set_is_fresh(False)) for new_deal in new_deals])
-        self.deal_analyzer_mock.assert_has_calls([call(Deal(new_deal), new_deal, ActionInfo()) for new_deal in new_deals])
+        self.database_mock.update_deal.assert_has_calls([call(Deal(new_deal)) for new_deal in new_deals])
+        self.deal_analyzer_mock.assert_has_calls([call(Deal(new_deal), new_deal, Action()) for new_deal in new_deals])
 
     def test_process_fresh_deals_updated_deals(self):
         self.processor.process_fresh_deals(self.fresh_deals_test)
@@ -69,13 +69,13 @@ class TestFreshDealsProcessor(DebuggableTestCase):
         updated_fresh_deals[9].number_of_comments = 852
 
         updated_fresh_deals_onlychanged = [updated_fresh_deals[i] for i in [0, 1, 2, 3, 4, 9]]
-        deals_test_onlychanged = [Deal(self.fresh_deals_test[i]).set_is_fresh(False) for i in [0, 1, 2, 3, 4, 9]]
+        deals_test_onlychanged = [Deal(self.fresh_deals_test[i]) for i in [0, 1, 2, 3, 4, 9]]
 
         self.processor.process_fresh_deals(updated_fresh_deals)
         self.database_mock.update_deal.assert_has_calls(
-            [call(Deal(updated_fresh_deal).set_is_fresh(False)) for updated_fresh_deal in updated_fresh_deals_onlychanged])
+            [call(Deal(updated_fresh_deal)) for updated_fresh_deal in updated_fresh_deals_onlychanged])
         self.deal_analyzer_mock.assert_has_calls(
-            [call(fresh_deal_test, updated_fresh_deal, ActionInfo()) for fresh_deal_test, updated_fresh_deal in
+            [call(fresh_deal_test, updated_fresh_deal, Action()) for fresh_deal_test, updated_fresh_deal in
              zip(deals_test_onlychanged, updated_fresh_deals_onlychanged)])
 
 if __name__ == '__main__':

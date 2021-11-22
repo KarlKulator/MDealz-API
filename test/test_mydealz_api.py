@@ -19,8 +19,9 @@ class TestMydealzApi(DebuggableTestCase):
         self.assertIsInstance(fresh_deal.degrees, int)
         self.assertLess(fresh_deal.degrees, 200000)
         self.assertGreater(fresh_deal.degrees, -200000)
-        self.assertGreater(fresh_deal.creation_date, datetime.datetime(2010, 1, 1))
-        self.assertLess(fresh_deal.creation_date, datetime.datetime.now())
+        if fresh_deal.creation_date:
+            self.assertGreater(fresh_deal.creation_date, datetime.datetime(2010, 1, 1))
+            self.assertLess(fresh_deal.creation_date, datetime.datetime.now())
         self.assertEqual(fresh_deal.group, '')
         self.assertTrue(fresh_deal.title)
         self.assertTrue(fresh_deal.username, '')
